@@ -36,7 +36,7 @@ if prompt := st.chat_input("What is up?"):
     }
     print(data)
     # REST API 를 호출해야함.
-    url = "https://ef59-3-39-53-42.ngrok-free.app/chat"
+    url = "https://763f-3-39-53-42.ngrok-free.app/chat"
     serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json"})
     #print(json.dumps(serverRsp))
     #serverRsp = requests.get(url)
