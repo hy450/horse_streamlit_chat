@@ -11,6 +11,11 @@ def response_generator(responseDatsa):
 
 st.title("KRA 챗봇")
 
+
+model_radio = st.sidebar.radio("Select model",(
+    "KoAlpaca","FineTuned")
+)
+
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -35,9 +40,10 @@ if prompt := st.chat_input("What is up?"):
         'content': prompt
     }
     print(data)
-    # REST API 를 호출해야함.
-    url = "https://763f-3-39-53-42.ngrok-free.app/chat"
-    serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json"})
+    # REST API 를 호출해야함.    
+    url = "http://3.39.53.42:8000/chat" if model_radio == "FineTuned" else "http://3.37.154.147:8000/chat"
+
+    serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json"},verify=False)
     #print(json.dumps(serverRsp))
     #serverRsp = requests.get(url)
     if serverRsp.status_code == 200:
