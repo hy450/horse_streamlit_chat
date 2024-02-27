@@ -2,6 +2,7 @@ import streamlit as st
 import time
 import requests
 import json
+from audio_recorder_streamlit import audio_recorder
 
 # Streamed response emulator
 def response_generator(responseDatsa):    
@@ -11,11 +12,20 @@ def response_generator(responseDatsa):
 
 st.title("KRA 챗봇")
 
+with st.sidebar:
+    
+    model_radio = st.sidebar.radio("Select model",(
+        "KoAlpaca","FineTuned"))
+    st.sidebar.text("ver 022715")
+    st.empty()
 
-model_radio = st.sidebar.radio("Select model",(
-    "KoAlpaca","FineTuned")
-)
-st.sidebar.text("ver 022715")
+    if audio_bytes := audio_recorder(text="녹음",icon_size="3x"):
+        st.audio(audio_bytes,format="audio/wav")    
+
+
+
+print(model_radio)
+    
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -44,7 +54,7 @@ if prompt := st.chat_input("What is up?"):
     # REST API 를 호출해야함.    
     url = "http://3.39.53.42:8000/chat" if model_radio == "FineTuned" else "http://3.37.154.147:8000/chat"
 
-    serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json",'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'},verify=False)
+    serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json"},verify=False)
     #print(json.dumps(serverRsp))
     #serverRsp = requests.get(url)
     if serverRsp.status_code == 200:
@@ -63,5 +73,4 @@ if prompt := st.chat_input("What is up?"):
         st.write_stream(response_generator(response))
     # Add assistant response to chat history
     st.session_state.messages.append({"role": "assistant", "content": response})
-
 
