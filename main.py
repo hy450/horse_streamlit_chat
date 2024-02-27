@@ -44,7 +44,7 @@ if prompt := st.chat_input("What is up?"):
     # REST API 를 호출해야함.    
     url = "http://3.39.53.42:8000/chat" if model_radio == "FineTuned" else "http://3.37.154.147:8000/chat"
 
-    serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json"},verify=False)
+    serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json",'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'},verify=False)
     #print(json.dumps(serverRsp))
     #serverRsp = requests.get(url)
     if serverRsp.status_code == 200:
