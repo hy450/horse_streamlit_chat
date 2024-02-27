@@ -15,6 +15,7 @@ st.title("KRA 챗봇")
 model_radio = st.sidebar.radio("Select model",(
     "KoAlpaca","FineTuned")
 )
+st.sidebar.text("ver 022715")
 
 # Initialize chat history
 if "messages" not in st.session_state:
