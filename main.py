@@ -16,17 +16,13 @@ with st.sidebar:
     
     model_radio = st.sidebar.radio("Select model",(
         "KoAlpaca","FineTuned"))
-    st.sidebar.text("ver 022715")
-    st.empty()
+    st.sidebar.text("ver 022715")    
 
     if audio_bytes := audio_recorder(text="녹음",icon_size="3x"):
-        st.audio(audio_bytes,format="audio/wav")    
-
+        st.audio(audio_bytes,format="audio/wav")
 
 
 print(model_radio)
-    
-
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
