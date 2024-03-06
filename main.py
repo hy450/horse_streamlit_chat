@@ -12,7 +12,7 @@ def response_generator(responseDatsa):
         yield word + " "
         time.sleep(0.05)
 
-def queryToChatbot(prompt):
+def queryToServer(prompt) -> str:
     data={
         'content': prompt
     }
@@ -21,16 +21,18 @@ def queryToChatbot(prompt):
     url = "http://3.39.53.42:8000/chat" if model_radio == "FineTuned" else "http://3.37.154.147:8000/chat"
 
     serverRsp = requests.post(url, json=data, headers={"Content-Type": "application/json"},verify=False)
-    #print(json.dumps(serverRsp))
-    #serverRsp = requests.get(url)
+    
     if serverRsp.status_code == 200:
-        #print(serverRsp.json())
         data = serverRsp.json()
-        response = data["content"]       
-
+        response = data["content"]
     else:
         response = "에러가 발생하였습니다."
 
+    return response
+
+
+def queryToChatbot(prompt):
+    response = queryToServer(prompt=prompt)
     with st.chat_message("assistant"):
         st.write_stream(response_generator(response))
     # Add assistant response to chat history
@@ -39,27 +41,34 @@ def queryToChatbot(prompt):
 
 st.title("KRA 챗봇")
 
-with st.sidebar:
-    model_radio = st.sidebar.radio("Select model",(
-        "KoAlpaca","FineTuned"))
-    st.sidebar.text("ver 030611")    
+if 'audio_bytes_hash' not in st.session_state:
+    st.session_state.audio_bytes_hash=None
 
+
+model_radio = st.sidebar.radio("Select model",(
+    "KoAlpaca","FineTuned"))
+st.sidebar.text("ver 030611")    
+
+with st.sidebar:
     if audio_bytes := audio_recorder(text="녹음",icon_size="3x"):
         st.audio(audio_bytes,format="audio/wav")
-        with open("ko_read_ko1.wav",mode="wb") as f:
-            f.write(audio_bytes)
-            f.close()
-            mp_encoder = MultipartEncoder(                
-                fields={                                        
-                    'audio_file': ( 'ko_read_ko1.wav', open("ko_read_ko1.wav", "rb"), 'audio/wav')                    
-                }
-            )                                    
-            audioRsp = requests.post('http://15.164.1.44:9000/asr',data=mp_encoder, headers={'Content-Type': mp_encoder.content_type})
-            rspJson = audioRsp.json()
-            # print(rspJson['text'])
-            st.session_state.messages.append({"role": "user", "content": rspJson['text']})    
-            # queryToChatbot(prompt=rspJson['text'])          
-            
+        if hash(audio_bytes) != st.session_state.audio_bytes_hash:
+            st.session_state.audio_bytes_hash = hash(audio_bytes)
+            with open("ko_read_ko1.wav",mode="wb") as f:
+                f.write(audio_bytes)
+                f.close()
+                mp_encoder = MultipartEncoder(                
+                    fields={                                        
+                        'audio_file': ( 'ko_read_ko1.wav', open("ko_read_ko1.wav", "rb"), 'audio/wav')                    
+                    }
+                )                                    
+                audioRsp = requests.post('http://15.164.1.44:9000/asr',data=mp_encoder, headers={'Content-Type': mp_encoder.content_type})
+                rspJson = audioRsp.json()
+                # print(rspJson['text'])
+                st.session_state.messages.append({"role": "user", "content": rspJson['text']})    
+                # queryToChatbot(prompt=rspJson['text'])
+                response = queryToServer(prompt=rspJson['text'])
+                st.session_state.messages.append({"role": "assistant", "content": response})
 
 
 print(model_radio)
