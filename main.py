@@ -34,7 +34,7 @@ def queryToChatbot(prompt):
     with st.chat_message("assistant"):
         st.write_stream(response_generator(response))
     # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})        
+    st.session_state.messages.append({"role": "assistant", "content": response})
 
 
 st.title("KRA 챗봇")
@@ -42,7 +42,7 @@ st.title("KRA 챗봇")
 with st.sidebar:
     model_radio = st.sidebar.radio("Select model",(
         "KoAlpaca","FineTuned"))
-    st.sidebar.text("ver 030610")    
+    st.sidebar.text("ver 030611")    
 
     if audio_bytes := audio_recorder(text="녹음",icon_size="3x"):
         st.audio(audio_bytes,format="audio/wav")
@@ -58,7 +58,7 @@ with st.sidebar:
             rspJson = audioRsp.json()
             # print(rspJson['text'])
             st.session_state.messages.append({"role": "user", "content": rspJson['text']})    
-            # queryToChatbot(prompt=rspJson['text'])          
+            queryToChatbot(prompt=rspJson['text'])          
             
 
 
