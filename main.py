@@ -58,7 +58,7 @@ with st.sidebar:
             rspJson = audioRsp.json()
             # print(rspJson['text'])
             st.session_state.messages.append({"role": "user", "content": rspJson['text']})    
-            queryToChatbot(prompt=rspJson['text'])          
+            # queryToChatbot(prompt=rspJson['text'])          
             
 
 
